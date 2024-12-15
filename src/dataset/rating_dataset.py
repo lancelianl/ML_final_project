@@ -129,7 +129,7 @@ def preprocess_data(
     if save_interaction_matrix:
         interaction_matrix = train_df.pivot(index='user_id', columns='anime_id', values='rating').fillna(0)
         os.makedirs('data/processed', exist_ok=True)
-        interaction_matrix.to_csv('../../data/processed/interaction_matrix.csv')
+        interaction_matrix.to_csv('../data/processed/interaction_matrix.csv')
 
     return train_dataset, val_dataset, test_dataset
 
