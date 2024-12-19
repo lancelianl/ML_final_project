@@ -28,7 +28,8 @@ Running the Code
         jupyter notebook
     Open and run the following notebooks sequentially based on the method you want to use:
         Data Analysis: notebooks/data_analysis.ipynb
-        Genre-Based Baseline Testing: notebooks/test_genre_baseline.ipynb
+        User-Previous-Based Baseline Testing: notebooks/user_previous_baseline.ipynb
+        Genre-Based Baseline Testing: notebooks/genre_baseline.ipynb
         Collaborative Filtering: notebooks/collaborative_filtering.ipynb
         Content-Based Recommendation: notebooks/content_based.ipynb
     Each notebook contains the necessary code to load the data, train the models, and evaluate
