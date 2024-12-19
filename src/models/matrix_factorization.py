@@ -53,18 +53,27 @@ class MatrixFactorizationModel(BaseRecommender):
         prediction = dot_product + user_bias + item_bias
         return prediction.squeeze()
 
-    def fit(self, train_loader, val_loader=None, num_epochs=10, lr=0.01, device='cpu', early_stopping_patience=3):
+    def fit(self, train_loader, val_loader=None, num_epochs=10, lr=0.01, device='cpu'):
         """
-        Train the Matrix Factorization model with early stopping.
+        Train the Matrix Factorization model.
         Parameters:
-        - early_stopping_patience: Number of epochs to wait for validation loss improvement before stopping.
+        - train_loader: DataLoader for training data
+        - val_loader: DataLoader for validation data (optional)
+        - num_epochs: Number of training epochs
+        - lr: Learning rate
+        - device: 'cpu' or 'cuda'
         """
         self.to(device)
-        optimizer = torch.optim.Adam(self.parameters(), lr=lr, weight_decay=1e-4)
+        optimizer = torch.optim.Adam(self.parameters(), lr=lr)
         criterion = nn.MSELoss()
 
+        # To store average losses across all epochs
+        train_loss_history = []
+        val_loss_history = []
+
+        # Variables to track the best model
         best_val_loss = float('inf')
-        patience_counter = 0
+        best_model_state = None
 
         for epoch in range(num_epochs):
             self.train()
@@ -81,26 +90,27 @@ class MatrixFactorizationModel(BaseRecommender):
                 train_loss += loss.item()
 
             train_loss /= len(train_loader)
+            train_loss_history.append(train_loss)
             print(f"Epoch {epoch + 1}/{num_epochs}, Training Loss: {train_loss:.4f}")
 
-            # Validation step
+            # Optional validation step
+            val_loss = None
             if val_loader:
                 val_loss = self.evaluate(val_loader, criterion, device)
-                print(f"Validation MSE: {val_loss:.4f}")
+                val_loss_history.append(val_loss)
+                print(f"Epoch {epoch + 1}/{num_epochs}, Validation Loss: {val_loss:.4f}")
 
-                # Early stopping check
+                # Save the best model if validation loss improves
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
-                    patience_counter = 0
-                    # Optionally save the best model weights
                     best_model_state = self.state_dict()
-                else:
-                    patience_counter += 1
-                    if patience_counter >= early_stopping_patience:
-                        print("Early stopping triggered.")
-                        # Load the best model weights (optional)
-                        self.load_state_dict(best_model_state)
-                        break
+
+        # Load the best model state (if validation loader was used)
+        if best_model_state is not None:
+            self.load_state_dict(best_model_state)
+
+        # Return the whole loss history
+        return train_loss_history, val_loss_history
 
 
     def evaluate(self, data_loader, criterion, device='cpu'):
