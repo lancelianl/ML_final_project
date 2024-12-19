@@ -28,12 +28,18 @@ Running the Code
         jupyter notebook
     Open and run the following notebooks sequentially based on the method you want to use:
         Data Analysis: notebooks/data_analysis.ipynb
-        User-Previous-Based Baseline Testing: notebooks/test_user_previous_baseline.ipynb
         Genre-Based Baseline Testing: notebooks/test_genre_baseline.ipynb
         Collaborative Filtering: notebooks/collaborative_filtering.ipynb
         Content-Based Recommendation: notebooks/content_based.ipynb
     Each notebook contains the necessary code to load the data, train the models, and evaluate
     performance.
+
+Troubleshooting
+    If you encounter the following error: ModuleNotFoundError:
+        No module named 'dataset.rating_dataset'
+    Just move the Jupyter notebooks directly under the src folder. There happens to be an issue
+    with sys.path.append(src_path) on certain computers.
+
 
 License
     This project is open-source and available under the MIT License.
